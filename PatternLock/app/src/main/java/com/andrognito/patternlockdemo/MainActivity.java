@@ -17,6 +17,7 @@ import com.andrognito.rxpatternlockview.RxPatternLockView;
 import com.andrognito.rxpatternlockview.events.PatternLockCompleteEvent;
 import com.andrognito.rxpatternlockview.events.PatternLockCompoundEvent;
 
+import java.util.Calendar;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -24,9 +25,9 @@ import io.reactivex.functions.Consumer;
 
 public class MainActivity extends AppCompatActivity {
     private PatternLockView mPatternLockView;
-    public static long time1 = 0;
-    public static long time2 = 0;
-    public static double setTime = 0;
+    public long time1 = 0;
+    public long time2 = 0;
+    public double setTime = 0;
     TextView textView = null;
     String pattern;
     String pattern01;
@@ -38,6 +39,7 @@ public class MainActivity extends AppCompatActivity {
             Log.d(getClass().getName(), "Pattern drawing started");
             time1 = System.currentTimeMillis ();
             Log.d("time1: ", time1 / 1000.0 + "");
+            setTime = 0;
         }
 
         @Override
@@ -63,6 +65,7 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }
             }
+
             ex_num++;
 
         }
@@ -71,7 +74,10 @@ public class MainActivity extends AppCompatActivity {
         public void onComplete(List<PatternLockView.Dot> pattern) {
             Log.d(getClass().getName(), "Pattern complete: " +
                     PatternLockUtils.patternToString(mPatternLockView, pattern));
-            setTime = 0;
+            textView.setText(" ");
+            time1 = 0;
+            time2 = 0;
+            setTime = 0.0;
         }
 
         @Override
@@ -111,6 +117,7 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void accept(PatternLockCompleteEvent patternLockCompleteEvent) throws Exception {
                         Log.d(getClass().getName(), "Complete: " + patternLockCompleteEvent.getPattern().toString());
+                        ex_num = 0;
                     }
                 });
 
@@ -121,9 +128,7 @@ public class MainActivity extends AppCompatActivity {
                         if (event.getEventType() == PatternLockCompoundEvent.EventType.PATTERN_STARTED) {
                             Log.d(getClass().getName(), "Pattern drawing started"); //최초로 그림 그릴때
                         } else if (event.getEventType() == PatternLockCompoundEvent.EventType.PATTERN_PROGRESS) {
-                            if(pattern != PatternLockUtils.patternToString(mPatternLockView, event.getPattern())){
 
-                            }
                             time2 = System.currentTimeMillis ();
                             Log.d(getClass().getName(), "Pattern progress: " +
                                     PatternLockUtils.patternToString(mPatternLockView, event.getPattern()));
@@ -133,10 +138,12 @@ public class MainActivity extends AppCompatActivity {
                         } else if (event.getEventType() == PatternLockCompoundEvent.EventType.PATTERN_COMPLETE) {
                             Log.d(getClass().getName(), "Pattern complete: " +
                                     PatternLockUtils.patternToString(mPatternLockView, event.getPattern()));
+                            ex_num = 0;
                         } else if (event.getEventType() == PatternLockCompoundEvent.EventType.PATTERN_CLEARED) {
                             Log.d(getClass().getName(), "Pattern has been cleared");
                         }
                     }
                 });
+        setTime = 0;
     }
 }
