@@ -434,6 +434,19 @@ public class PatternLockView extends View {
         return super.onHoverEvent(event);
     }
 
+    public long time1 = 0;
+    public long time2 = 0;
+
+    public double timeStamp(long time1, long time2){
+        double passtime = 0;
+
+        passtime = (time2-time1) / 1000.0;
+
+        Log.d("time: ", passtime + "");
+
+        return passtime;
+    }
+
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         final float x = event.getX();
@@ -445,15 +458,9 @@ public class PatternLockView extends View {
 
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
+                //time1 = System.currentTimeMillis ();
                 handleActionDown(event);
-                Log.d("ddddd", "x: " + x + "y" + y);
-                /*try {
-                    mNormalStateColor = typedArray.getColor(R.styleable.PatternLockView_normalStateColor,
-                            ResourceUtils.getColor(getContext(), R.color.pomegranate));
-                }finally {
-                    typedArray.recycle();
-                }*/
-
+                //Log.d("ddddd", "x: " + x + "y" + y);
                 return true;
             case MotionEvent.ACTION_UP:
                 handleActionUp(event);
@@ -461,7 +468,10 @@ public class PatternLockView extends View {
                 return true;
             case MotionEvent.ACTION_MOVE:
                 handleActionMove(event);
-                Log.d("ttttt", "x: " + x + "y" + y);
+                //time2 = System.currentTimeMillis ();
+                //Log.d("time: ", (time2-time1)/1000.0 + "");
+                //timeStamp(time1, time2);
+                //Log.d("ttttt", "x: " + x + "y" + y);
                 return true;
             case MotionEvent.ACTION_CANCEL:
                 mPatternInProgress = false;
