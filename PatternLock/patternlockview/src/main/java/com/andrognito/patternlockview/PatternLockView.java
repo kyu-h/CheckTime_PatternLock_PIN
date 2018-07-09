@@ -434,18 +434,9 @@ public class PatternLockView extends View {
         return super.onHoverEvent(event);
     }
 
-    public long time1 = 0;
-    public long time2 = 0;
-
-    public double timeStamp(long time1, long time2){
-        double passtime = 0;
-
-        passtime = (time2-time1) / 1000.0;
-
-        Log.d("time: ", passtime + "");
-
-        return passtime;
-    }
+    private long timeStart;
+    private long timeEnd;
+    private double timeResult;
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
@@ -458,23 +449,24 @@ public class PatternLockView extends View {
 
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
-                //time1 = System.currentTimeMillis ();
+                timeStart = System.currentTimeMillis();
+                timeEnd = System.currentTimeMillis();
                 handleActionDown(event);
-                //Log.d("ddddd", "x: " + x + "y" + y);
                 return true;
             case MotionEvent.ACTION_UP:
                 handleActionUp(event);
+                timeStart = 1000;
+                timeEnd = 0;
                 clearPattern();
                 return true;
             case MotionEvent.ACTION_MOVE:
+                timeEnd = System.currentTimeMillis();
                 handleActionMove(event);
-                //time2 = System.currentTimeMillis ();
-                //Log.d("time: ", (time2-time1)/1000.0 + "");
-                //timeStamp(time1, time2);
-                //Log.d("ttttt", "x: " + x + "y" + y);
                 return true;
             case MotionEvent.ACTION_CANCEL:
                 mPatternInProgress = false;
+                timeStart = 1000;
+                timeEnd = 0;
                 resetPattern();
                 notifyPatternCleared();
 
@@ -487,6 +479,15 @@ public class PatternLockView extends View {
                 return true;
         }
         return false;
+    }
+
+    public double getTime() {
+        timeResult = (timeEnd - timeStart) / 1000.0;
+        return timeResult;
+    }
+
+    public void resetTime() {
+        timeStart = System.currentTimeMillis();
     }
 
     /**
@@ -1378,3 +1379,4 @@ public class PatternLockView extends View {
         ValueAnimator mLineAnimator;
     }
 }
+

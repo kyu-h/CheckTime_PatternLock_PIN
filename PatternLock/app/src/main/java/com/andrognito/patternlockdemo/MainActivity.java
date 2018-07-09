@@ -1,6 +1,7 @@
 package com.andrognito.patternlockdemo;
 
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -25,59 +26,32 @@ import io.reactivex.functions.Consumer;
 
 public class MainActivity extends AppCompatActivity {
     private PatternLockView mPatternLockView;
-    public long time1 = 0;
-    public long time2 = 0;
-    public double setTime = 0;
     TextView textView = null;
     String pattern;
     String pattern01;
     int ex_num = 0;
 
+    Handler handler = null;
+    boolean flag = true;
+
     private PatternLockViewListener mPatternLockViewListener = new PatternLockViewListener() {
         @Override
         public void onStarted() {
             Log.d(getClass().getName(), "Pattern drawing started");
-            time1 = System.currentTimeMillis ();
-            Log.d("time1: ", time1 / 1000.0 + "");
-            setTime = 0;
         }
 
         @Override
         public void onProgress(List<PatternLockView.Dot> progressPattern) {
             Log.d(getClass().getName(), "Pattern progressssss: " +
                     PatternLockUtils.patternToString(mPatternLockView, progressPattern));
-            time1 = System.currentTimeMillis ();
             pattern01 = PatternLockUtils.patternToString(mPatternLockView, progressPattern);
-            if(pattern != pattern01){
-
-                Log.d("Time2: ", time2 + "");
-
-                setTime = (time1 - time2) / 1000.0;
-                if(ex_num >0){
-                    if(setTime < 1.0){
-                        textView.setText("short click");
-                        Log.d("setTime: ", setTime + "");
-                    }else if(1.0 < setTime && setTime < 2.0) {
-                        textView.setText("middle click");
-                        Log.d("else setTime: ", setTime + "");
-                    }else if(2.0 < setTime) {
-                        textView.setText("long click");
-                    }
-                }
-            }
-
             ex_num++;
-
         }
 
         @Override
         public void onComplete(List<PatternLockView.Dot> pattern) {
             Log.d(getClass().getName(), "Pattern complete: " +
                     PatternLockUtils.patternToString(mPatternLockView, pattern));
-            textView.setText(" ");
-            time1 = 0;
-            time2 = 0;
-            setTime = 0.0;
         }
 
         @Override
@@ -112,6 +86,33 @@ public class MainActivity extends AppCompatActivity {
         mPatternLockView.setInputEnabled(true);
         mPatternLockView.addPatternLockListener(mPatternLockViewListener);
 
+        handler = new Handler();
+
+        final Thread thread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                while(true) {
+                    final double time = mPatternLockView.getTime();
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            if(0.0 < time && time < 1.0){
+                                textView.setText("short click");
+                            }else if(1.0 < time && time < 2.0) {
+                                textView.setText("middle click");
+                            }else if(2.0 < time) {
+                                textView.setText("long click");
+                            }else if(time < 0.0){
+                                textView.setText("");
+                            }
+                        }
+                    });
+                }
+            }
+        });
+
+        thread.start();
+
         RxPatternLockView.patternComplete(mPatternLockView)
                 .subscribe(new Consumer<PatternLockCompleteEvent>() {
                     @Override
@@ -129,7 +130,8 @@ public class MainActivity extends AppCompatActivity {
                             Log.d(getClass().getName(), "Pattern drawing started"); //최초로 그림 그릴때
                         } else if (event.getEventType() == PatternLockCompoundEvent.EventType.PATTERN_PROGRESS) {
 
-                            time2 = System.currentTimeMillis ();
+                            Log.d("getTime", String.valueOf(mPatternLockView.getTime()));
+                            mPatternLockView.resetTime();
                             Log.d(getClass().getName(), "Pattern progress: " +
                                     PatternLockUtils.patternToString(mPatternLockView, event.getPattern()));
 
@@ -144,6 +146,5 @@ public class MainActivity extends AppCompatActivity {
                         }
                     }
                 });
-        setTime = 0;
     }
 }
