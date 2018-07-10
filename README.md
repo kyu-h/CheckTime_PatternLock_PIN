@@ -12,3 +12,13 @@ A pattern locking technique applied to a Galaxy cell phone is a locking techniqu
 This img shows the point have 3 attributes. When using this system on the cell phone the letters which are short click, middle click, long click will not showing because anyone can see how user press. So we changed it vibration. <br>
 
  <a href="https://youtu.be/OEOkHHQPTgA" target="_blank">Watching for full implementation video</a> <br>
+ 
+ <table style="width:100%">
+  <tr>
+    <th>
+    Device: Nexus 5X<br>
+    OS: Android<br>
+    Version: API28<br>
+    Display: 420dpi<br></th>
+  </tr>
+ </table>
