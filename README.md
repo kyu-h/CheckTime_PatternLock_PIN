@@ -8,6 +8,8 @@ So the basic license follows thier rules <br>
  <table style="width:100%">
   <tr>
    <th>The information of experiment environment</th>
+  </tr>
+  <tr>
     <th>
     Device: Nexus 5X<br>
     OS: Android<br>
